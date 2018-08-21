@@ -35,9 +35,9 @@ The general workflow is
 1. Use [this library](https://github.com/mwcvitkovic/Deep_Learning_On_Code_With_A_Graph_Vocabulary--Code_Preprocessor) with its existing `repositories.txt` file to download 18 maven repositories and preprocess their contents into Augmented ASTs.
 2. Move the directories produced via step 1. to `s3shared/18_popular_mavens/repositories`.  (Don't worry if you're not using S3 - it'll still work.)
 3. Navigate to `s3shared/18_popular_mavens/` and run `experiments/make_train_test_split.sh` from the command line.
-4. For either the Fill In The Blank experiment (`FITB_vocab_comparison`) or the Variable Naming experiment (`VarNaming_vocab_comparison`), run `python -m experiments.<experiment name>.make_tasks_and_preprocess`.
-5. Run `python -m experiments.<experiment name>.train_models`.
-6. Run `python -m experiments.<experiment name>.evaluate_models`.
+4. For either the Fill In The Blank experiment (`FITB_vocab_comparison`) or the Variable Naming experiment (`VarNaming_vocab_comparison`), run `python -m experiments.<experiment name>.make_tasks_and_preprocess`.  (You may need to change some args/kwargs in this file to suit your setup, e.g. changing `aws_config['remote_ids']['box1']` to `'local'` if you want to run locally.)
+5. Run `python -m experiments.<experiment name>.train_models`. (Again, you may need to change some args/kwargs in this file to suit your setup.)
+6. Run `python -m experiments.<experiment name>.evaluate_models`. (Again, you may need to change some args/kwargs in this file to suit your setup.)
 
 # Questions?
 Feel free to get in touch with [Milan Cvitkovic](mwcvitkovic@gmail.com) or any of the other paper authors.  We'd love to hear from you!
