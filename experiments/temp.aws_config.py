@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 aws_config = dict(
     s3_bucket_addr='s3://...',
     local_config_profile_name='',

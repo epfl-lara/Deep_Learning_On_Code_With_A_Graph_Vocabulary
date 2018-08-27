@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 from collections import deque
 from typing import Tuple, Union, FrozenSet
 

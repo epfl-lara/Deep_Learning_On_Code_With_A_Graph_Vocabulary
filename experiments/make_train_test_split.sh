@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #!/usr/bin/env bash
 
 # Convenience script for making train and test sets of .gml files out of a bunch of java (maven) repositories

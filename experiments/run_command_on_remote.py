@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 import base64
 import json
 import logging

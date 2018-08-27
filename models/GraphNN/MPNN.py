@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 from mxnet import nd
 
 from models.Model import Model

@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 from models.FITB.CharCNN import FITBCharCNN
 from models.FITB.FixedVocab import FITBFixedVocab
 from models.FITB.NameGraphVocab import FITBNameGraphVocab

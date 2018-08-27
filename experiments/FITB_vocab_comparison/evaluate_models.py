@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 from experiments.evaluate_models_for_experiment import evaluate_models_for_experiment
 from experiments.run_command_on_remote import run_command_on_remote
 

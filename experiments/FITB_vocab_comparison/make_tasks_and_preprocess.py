@@ -1,3 +1,4 @@
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 from data.AugmentedAST import syntax_only_excluded_edge_types
 from experiments import aws_config
 from experiments.make_tasks_and_preprocess_for_experiment import make_tasks_and_preprocess
