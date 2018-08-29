@@ -1,6 +1,6 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #!/usr/bin/env bash
 
+# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # Convenience script for making train and test sets of .gml files out of a bunch of java (maven) repositories
 # Splits the repositories into "seen" and "unseen", then aggregates gml files from each category into train and test sets
 # You'll be left with a seen_repos directory and an unseen_repos directory containing said repos, and

@@ -204,6 +204,59 @@ class TestVarNamingNameGraphVocab(unittest.TestCase):
         self.assertEqual(len(orig_datapoints), len(reencoded_datapoints))
         self.assertCountEqual(orig_datapoints, reencoded_datapoints)
 
+    def test_preprocess_task_for_model_no_subtoken_edges(self):
+        task = VarNamingTask.from_gml_files(self.test_gml_files)
+        task_filepath = os.path.join(self.output_dataset_dir, 'VarNamingTask.pkl')
+        task.save(task_filepath)
+        VarNamingNameGraphVocab.preprocess_task(task=task,
+                                                output_dir=self.output_dataset_dir,
+                                                n_jobs=30,
+                                                data_encoder='new',
+                                                data_encoder_kwargs=dict(
+                                                    max_name_encoding_length=self.max_name_encoding_length,
+                                                    add_edges=False),
+                                                instance_to_datapoints_kwargs=dict(max_nodes_per_graph=100))
+        self.assertNotIn('jobs.txt', os.listdir(self.output_dataset_dir),
+                         "The jobs.txt file from process_graph_to_datapoints_with_xargs didn't get deleted")
+        self.assertTrue(all(len(i) > 10 for i in os.listdir(self.output_dataset_dir)),
+                        "Hacky check for if pickled jobs didn't get deleted")
+        reencoding_dir = os.path.join(self.output_dataset_dir, 're-encoding')
+        os.mkdir(reencoding_dir)
+        data_encoder = VarNamingNameGraphVocab.DataEncoder.load(os.path.join(self.output_dataset_dir,
+                                                                             'VarNamingNameGraphVocabDataEncoder.pkl'))
+        self.assertCountEqual(data_encoder.all_edge_types,
+                              list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types] + [
+                                  'SUBTOKEN_USE', 'reverse_SUBTOKEN_USE'],
+                              "DataEncoder found weird edge types")
+        VarNamingNameGraphVocab.preprocess_task(task=task,
+                                                output_dir=reencoding_dir,
+                                                n_jobs=30,
+                                                data_encoder=data_encoder)
+        orig_datapoints = []
+        for file in os.listdir(self.output_dataset_dir):
+            if file not in ['VarNamingNameGraphVocabDataEncoder.pkl', 'VarNamingTask.pkl', 're-encoding']:
+                with open(os.path.join(self.output_dataset_dir, file), 'rb') as f:
+                    dp = pickle.load(f)
+                    self.assertEqual(0, dp.edges['SUBTOKEN_USE'].sum())
+                    self.assertEqual(0, dp.edges['reverse_SUBTOKEN_USE'].sum())
+                    self.assertCountEqual(dp.edges.keys(),
+                                          list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types] + [
+                                              'SUBTOKEN_USE', 'reverse_SUBTOKEN_USE'],
+                                          'We lost some edge types')
+                    orig_datapoints.append(
+                        (dp.real_variable_name, dp.origin_file, dp.encoder_hash, dp.edges.keys()))
+
+        reencoded_datapoints = []
+        for file in os.listdir(reencoding_dir):
+            with open(os.path.join(reencoding_dir, file), 'rb') as f:
+                dp = pickle.load(f)
+                self.assertEqual(0, dp.edges['SUBTOKEN_USE'].sum())
+                self.assertEqual(0, dp.edges['reverse_SUBTOKEN_USE'].sum())
+                reencoded_datapoints.append(
+                    (dp.real_variable_name, dp.origin_file, dp.encoder_hash, dp.edges.keys()))
+        self.assertEqual(len(orig_datapoints), len(reencoded_datapoints))
+        self.assertCountEqual(orig_datapoints, reencoded_datapoints)
+
     def test_instance_to_datapoint(self):
         for excluded_edge_types in [syntax_only_excluded_edge_types, frozenset()]:
             de = VarNamingNameGraphVocab.DataEncoder(self.task.graphs_and_instances,

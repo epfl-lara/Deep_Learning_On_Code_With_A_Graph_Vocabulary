@@ -263,11 +263,11 @@ class TestTrainModelOnTaskMemorizeMinibatch(unittest.TestCase):
                                      train_data_directory=self.output_dataset_dir,
                                      val_fraction=0.15,
                                      n_workers=4,
-                                     n_epochs=15,
+                                     n_epochs=7,
                                      evaluation_metrics=('evaluate_full_name_accuracy',),
                                      n_batch=(len(os.listdir(self.output_dataset_dir)) - 1) * 10,
                                      test=True)
-        self.assertGreaterEqual(wordwise_accuracy, 0.9)
+        self.assertGreaterEqual(wordwise_accuracy, 0.8)
 
     def test_train_model_on_task_memorize_minibatch_with_VarNamingCharCNNGGNN(self):
         preprocess_task_for_model(234,
@@ -345,6 +345,48 @@ class TestTrainModelOnTaskMemorizeMinibatch(unittest.TestCase):
                                      train_data_directory=self.output_dataset_dir,
                                      val_fraction=0.15,
                                      n_workers=4,
+                                     n_epochs=7,
+                                     evaluation_metrics=('evaluate_full_name_accuracy',),
+                                     n_batch=(len(os.listdir(self.output_dataset_dir)) - 1) * 10,
+                                     test=True)
+        self.assertGreaterEqual(wordwise_accuracy, 0.8)
+
+    def test_train_model_on_task_memorize_minibatch_no_subtoken_edges_with_VarNamingNameGraphVocabGGNN(self):
+        preprocess_task_for_model(234,
+                                  'VarNamingTask',
+                                  self.task_filepath,
+                                  'VarNamingNameGraphVocabGGNN',
+                                  dataset_output_dir=self.output_dataset_dir,
+                                  n_jobs=30,
+                                  excluded_edge_types=frozenset(),
+                                  data_encoder='new',
+                                  data_encoder_kwargs=dict(max_name_encoding_length=30,
+                                                           add_edges=False),
+                                  instance_to_datapoints_kwargs=dict(max_nodes_per_graph=100))
+        for f in [os.path.join(self.output_dataset_dir, f) for f in os.listdir(self.output_dataset_dir) if
+                  'DataEncoder' not in f][self.minibatch_size:]:
+            os.remove(f)
+        _, wordwise_accuracy = train(seed=1525,
+                                     log_dir=self.log_dir,
+                                     gpu_ids=(0, 1),
+                                     model_name='VarNamingNameGraphVocabGGNN',
+                                     data_encoder_filepath=os.path.join(self.output_dataset_dir,
+                                                                        '{}.pkl'.format(
+                                                                            VarNamingNameGraphVocabGGNN.DataEncoder.__name__)),
+                                     model_kwargs=dict(hidden_size=128,
+                                                       type_emb_size=30,
+                                                       name_emb_size=30,
+                                                       n_msg_pass_iters=3,
+                                                       max_name_length=8),
+                                     init_fxn_name='Xavier',
+                                     init_fxn_kwargs=dict(),
+                                     loss_fxn_name='VarNamingGraphVocabLoss',
+                                     loss_fxn_kwargs=dict(),
+                                     optimizer_name='Adam',
+                                     optimizer_kwargs={'learning_rate': .0005},
+                                     train_data_directory=self.output_dataset_dir,
+                                     val_fraction=0.15,
+                                     n_workers=4,
                                      n_epochs=15,
                                      evaluation_metrics=('evaluate_full_name_accuracy',),
                                      n_batch=(len(os.listdir(self.output_dataset_dir)) - 1) * 10,
@@ -386,8 +428,8 @@ class TestTrainModelOnTaskMemorizeMinibatch(unittest.TestCase):
                                      train_data_directory=self.output_dataset_dir,
                                      val_fraction=0.15,
                                      n_workers=4,
-                                     n_epochs=15,
+                                     n_epochs=9,
                                      evaluation_metrics=('evaluate_edit_distance',),
                                      n_batch=(len(os.listdir(self.output_dataset_dir)) - 1) * 10,
                                      test=True)
-        self.assertLessEqual(wordwise_accuracy, 1)
+        self.assertLessEqual(wordwise_accuracy, 2)
