@@ -36,8 +36,9 @@ class VarNamingNameGraphVocabDataEncoder(VarNamingCharCNNDataEncoder):
         self.add_edges = add_edges
         super().__init__(*args, **kwargs)
         self.all_node_types[self.subtoken_flag] = len(self.all_node_types)
-        self.all_edge_types = frozenset(
-            self.all_edge_types.union({self.subtoken_edge_type, self.subtoken_reverse_edge_type}))
+        if add_edges:
+            self.all_edge_types = frozenset(
+                self.all_edge_types.union({self.subtoken_edge_type, self.subtoken_reverse_edge_type}))
 
     def encode(self, dp: VarNamingCharCNNDataPoint):
         sbtk_to_graph_vocab_node = {}
@@ -94,11 +95,6 @@ class VarNamingNameGraphVocab(VarNamingCharCNN):
         for node, data in list(subgraph.nodes):
             if data['type'] == data_encoder.subtoken_flag and subgraph._graph.degree(node) == 0:
                 subgraph._graph.remove_node(node)
-
-        # Option to remove subtoken edges for ablation experiment
-        if data_encoder.add_edges == False:
-            edges_to_remove = [(i, o, k, data) for i, o, k, data in subgraph.edges if data['type'] in (data_encoder.subtoken_edge_type, data_encoder.subtoken_reverse_edge_type)]
-            subgraph._graph.remove_edges_from(edges_to_remove)
 
         # Assemble node types, node names, and label
         subgraph.node_ids_to_ints_from_0()

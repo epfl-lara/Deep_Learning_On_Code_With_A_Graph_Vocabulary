@@ -225,8 +225,7 @@ class TestVarNamingNameGraphVocab(unittest.TestCase):
         data_encoder = VarNamingNameGraphVocab.DataEncoder.load(os.path.join(self.output_dataset_dir,
                                                                              'VarNamingNameGraphVocabDataEncoder.pkl'))
         self.assertCountEqual(data_encoder.all_edge_types,
-                              list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types] + [
-                                  'SUBTOKEN_USE', 'reverse_SUBTOKEN_USE'],
+                              list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types],
                               "DataEncoder found weird edge types")
         VarNamingNameGraphVocab.preprocess_task(task=task,
                                                 output_dir=reencoding_dir,
@@ -237,11 +236,10 @@ class TestVarNamingNameGraphVocab(unittest.TestCase):
             if file not in ['VarNamingNameGraphVocabDataEncoder.pkl', 'VarNamingTask.pkl', 're-encoding']:
                 with open(os.path.join(self.output_dataset_dir, file), 'rb') as f:
                     dp = pickle.load(f)
-                    self.assertEqual(0, dp.edges['SUBTOKEN_USE'].sum())
-                    self.assertEqual(0, dp.edges['reverse_SUBTOKEN_USE'].sum())
+                    self.assertNotIn('SUBTOKEN_USE', dp.edges.keys())
+                    self.assertNotIn('reverse_SUBTOKEN_USE', dp.edges.keys())
                     self.assertCountEqual(dp.edges.keys(),
-                                          list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types] + [
-                                              'SUBTOKEN_USE', 'reverse_SUBTOKEN_USE'],
+                                          list(all_edge_types) + ['reverse_{}'.format(i) for i in all_edge_types],
                                           'We lost some edge types')
                     orig_datapoints.append(
                         (dp.real_variable_name, dp.origin_file, dp.encoder_hash, dp.edges.keys()))
@@ -250,8 +248,8 @@ class TestVarNamingNameGraphVocab(unittest.TestCase):
         for file in os.listdir(reencoding_dir):
             with open(os.path.join(reencoding_dir, file), 'rb') as f:
                 dp = pickle.load(f)
-                self.assertEqual(0, dp.edges['SUBTOKEN_USE'].sum())
-                self.assertEqual(0, dp.edges['reverse_SUBTOKEN_USE'].sum())
+                self.assertNotIn('SUBTOKEN_USE', dp.edges.keys())
+                self.assertNotIn('reverse_SUBTOKEN_USE', dp.edges.keys())
                 reencoded_datapoints.append(
                     (dp.real_variable_name, dp.origin_file, dp.encoder_hash, dp.edges.keys()))
         self.assertEqual(len(orig_datapoints), len(reencoded_datapoints))
