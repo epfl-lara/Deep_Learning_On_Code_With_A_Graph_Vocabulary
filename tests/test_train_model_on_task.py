@@ -300,11 +300,11 @@ class TestTrainModelOnTaskMemorizeMinibatch(unittest.TestCase):
                                      loss_fxn_name='VarNamingLoss',
                                      loss_fxn_kwargs=dict(),
                                      optimizer_name='Adam',
-                                     optimizer_kwargs={'learning_rate': .005},
+                                     optimizer_kwargs={'learning_rate': .0005},
                                      train_data_directory=self.output_dataset_dir,
                                      val_fraction=0.15,
                                      n_workers=4,
-                                     n_epochs=7,
+                                     n_epochs=5,
                                      evaluation_metrics=('evaluate_full_name_accuracy',),
                                      n_batch=(len(os.listdir(self.output_dataset_dir)) - 1) * 10,
                                      test=True)
